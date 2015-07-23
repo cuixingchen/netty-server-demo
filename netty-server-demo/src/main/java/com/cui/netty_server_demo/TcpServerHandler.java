@@ -28,9 +28,12 @@ public class TcpServerHandler extends ChannelInboundHandlerAdapter {
 				final byte[] msgbytes = (byte[]) obj;
 				Msg msg=new Msg();
 				msg.bodyfromBytes(msgbytes);
-				logger.info("消息内容:"+msg);
+				logger.info("server收到消息内容:"+msg);
+				msg.setUserId(200);
+				msg.setPassWord(201);
+				TcpServer.getInstance().send(ctx, msg);
 			} else {
-				logger.error("主handler---消息解码有误，请检查！！");
+				logger.error("server主handler---消息解码有误，请检查！！");
 			}
 
 		} finally {
@@ -41,7 +44,7 @@ public class TcpServerHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 
-		logger.info("-------------临时客户端建立连接--------------");
+		logger.info("-------------server临时客户端建立连接--------------");
 		//添加临时客户端
 
 	}
@@ -53,7 +56,7 @@ public class TcpServerHandler extends ChannelInboundHandlerAdapter {
 		InetSocketAddress address = (InetSocketAddress) ctx.channel()
 				.remoteAddress();
 		InetAddress inetAdd = address.getAddress();
-		logger.info("客户端断开连接：" + ctx.name() + ",IP:" + inetAdd.getHostAddress()
+		logger.info("server客户端断开连接：" + ctx.name() + ",IP:" + inetAdd.getHostAddress()
 				+ ",port:" + address.getPort());
 		// 记录日志
 		//移除临时客户端和客户端
@@ -63,7 +66,7 @@ public class TcpServerHandler extends ChannelInboundHandlerAdapter {
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) { // (4)
 		// Close the connection when an exception is raised.
 
-		logger.error("主handle---rexceptionCaught异常", cause);
+		logger.error("server主handle---rexceptionCaught异常", cause);
 		ctx.close();
 		ctx = null;
 	}

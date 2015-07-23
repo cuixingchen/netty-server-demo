@@ -2,6 +2,7 @@ package com.cui.netty_server_demo;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -25,15 +26,13 @@ public class TcpServer extends Thread {
 
 	public static TcpServer getInstance() {
 		if (tcpServer == null) {
-			createTcpServer();
+			synchronized (TcpServer.class) {
+				if (tcpServer == null) {
+					tcpServer = new TcpServer();
+				}
+			}
 		}
 		return tcpServer;
-	}
-
-	private static synchronized void createTcpServer() {
-		if (tcpServer == null) {
-			tcpServer = new TcpServer();
-		}
 	}
 
 	/**
@@ -51,7 +50,7 @@ public class TcpServer extends Thread {
 		init();
 		// 启动临时客户端管理(秒)
 		// 启动消息处理
-		//启动客户端管理
+		// 启动客户端管理
 	}
 
 	/**
@@ -91,8 +90,20 @@ public class TcpServer extends Thread {
 			// workerGroup.shutdownGracefully();
 			// bossGroup.shutdownGracefully();
 		}
-		logger.info("服务端初始化完成");
+		logger.info("server初始化完成");
 
 	}
 
+	/**
+	 * 发送消息
+	 * 
+	 * @param m
+	 */
+	public void send(ChannelHandlerContext chtx, Msg m) {
+		if (chtx != null && chtx.channel().isOpen()) {
+			logger.info("server发送消息：" + m);
+			chtx.write(m);
+			chtx.flush();
+		}
+	}
 }

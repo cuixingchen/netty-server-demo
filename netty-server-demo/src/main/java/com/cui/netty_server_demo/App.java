@@ -9,6 +9,6 @@ package com.cui.netty_server_demo;
  */
 public class App {
 	public static void main(String[] args) {
-		TcpServer.getInstance().run();
+		TcpServer.getInstance().start();
 	}
 }
